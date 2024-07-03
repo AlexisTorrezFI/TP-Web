@@ -8,7 +8,7 @@ class Producto(db.Model):
     nombre = db.Column(db.String(100), nullable=False)
     precio = db.Column(db.Integer , nullable=False)
     cantidad = db.Column(db.Integer , default=1)
-    image = db.Column(db.String(255))
+    imagen = db.Column(db.String(255))
     #me_gusta = db.Column(db.Integer , default=0)
     categoria_id =db.Column(db.Integer,db.ForeignKey('categorias.id'))
     comentarios=db.relationship("Comentario")

@@ -66,12 +66,33 @@ def listar_productos(id_usuario):
                 "cantidad":producto.cantidad,
                 "imagen":producto.imagen,
             }
-            productos_data.append(producto.data)
+            productos_data.append(producto_data)
         return jsonify(productos_data)
     except:
         return jsonify({"mensaje":"no hay ningun producto."})
 
-
+#------------endpoint para agregar un producto
+@cross_origin
+@app.route("/usuarios/<id_usuario>/productos/agregar" , methods=["POST"])
+def agregar_producto(id_usuario):
+    try:
+        if id_usuario == "1":
+            data = request.json
+            nuevo_nombre = data.get('nombre')
+            nuevo_precio =data.get('precio')
+            nueva_cantidad = data.get('cantidad')
+            nueva_imagen= data.get('imagen')
+            nueva_categoria_id=data.get('categoria_id')
+            
+            nuevo_producto=Producto(nombre=nuevo_nombre,precio=nuevo_precio,cantidad=nueva_cantidad,imagen=nueva_imagen,categoria_id=nueva_categoria_id)
+        
+            db.session.add(nuevo_producto)
+            db.session.commit()
+            return jsonify({"id":nuevo_producto.id,"nombre":nuevo_producto.nombre,"precio":nuevo_producto.precio,"cantidad":nuevo_producto.cantidad,"imagen":nuevo_producto.imagen,"categoria_id":nuevo_producto.categoria_id})
+        else:
+            return jsonify({"mensaje":"eeey, tu no puedes crear un producto"})
+    except:
+        return jsonify({"mensaje":"no se pudo agregar el producto."})
 
 
 if __name__ == '__main__':
