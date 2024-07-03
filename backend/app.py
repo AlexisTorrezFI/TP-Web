@@ -52,6 +52,27 @@ def crear_usuario():
     except:
         return jsonify({"mensaje":"no se puedo crear el usuario."})
 
+#------------endpoint para obtener la lista de los productos 
+@cross_origin
+@app.route("/usuarios/<id_usuario>/productos" , methods=["GET"])
+def listar_productos(id_usuario):
+    try:
+        productos = Producto.query.all()
+        productos_data=[]
+        for producto in productos:
+            producto_data={
+                "nombre":producto.nombre,
+                "precio":producto.precio,
+                "cantidad":producto.cantidad,
+                "imagen":producto.imagen,
+            }
+            productos_data.append(producto.data)
+        return jsonify(productos_data)
+    except:
+        return jsonify({"mensaje":"no hay ningun producto."})
+
+
+
 
 if __name__ == '__main__':
     db.init_app(app)
