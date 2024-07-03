@@ -22,6 +22,8 @@ class Comentario(db.Model):
     __tablename__='comentarios'
     id = db.Column(db.Integer,primary_key=True)
     user_id = db.Column(db.Integer)
+    nombre_usuario = db.Column(db.String(50))
+    apellido_usuario = db.Column(db.String(50))
     producto_id=db.Column(db.Integer, db.ForeignKey('productos.id'))
     comentario = db.Column(db.String(255))
 
