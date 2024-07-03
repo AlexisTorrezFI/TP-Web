@@ -17,7 +17,7 @@ def nada():
     return 
 
 
-#------------endpoint para crear entrar con un usuario
+#------------endpoint para obtener lista de los usuarios 
 @cross_origin
 @app.route("/usuarios" , methods=["GET"])
 def login_usuario():
@@ -36,7 +36,21 @@ def login_usuario():
     except:
         return jsonify({"mensaje":"No hay usuarios."})
 
+#------------endpoint para crear un usuario
+@cross_origin
+@app.route("/usuarios/crear" , methods=["POST"])
+def crear_usuario():
+    try:
+        data = request.json
+        nuevo_nombre = data.get('nombre')
+        nuevo_apellido =data.get('apellido')
+        nuevo_usuario = Usuario(nombre = nuevo_nombre, apellido = nuevo_apellido)
+        db.session.add(nuevo_usuario)
+        db.session.commit()
 
+        return jsonify({"id":nuevo_usuario.id,"nombre":nuevo_usuario.nombre,"apellido":nuevo_usuario.apellido})
+    except:
+        return jsonify({"mensaje":"no se puedo crear el usuario."})
 
 
 if __name__ == '__main__':
