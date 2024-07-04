@@ -20,7 +20,7 @@ def nada():
 #------------endpoint para obtener lista de los usuarios 
 @cross_origin
 @app.route("/usuarios" , methods=["GET"])
-def login_usuario():
+def listar_usuarios():
     try:
         usuarios = Usuario.query.all()
         usuarios_data=[]
@@ -36,9 +36,10 @@ def login_usuario():
     except:
         return jsonify({"mensaje":"No hay usuarios."})
 
+
 #------------endpoint para crear un usuario
 @cross_origin
-@app.route("/usuarios/crear" , methods=["POST"])
+@app.route("/usuarios" , methods=["POST"])
 def crear_usuario():
     try:
         data = request.json
@@ -54,8 +55,8 @@ def crear_usuario():
 
 #------------endpoint para obtener la lista de los productos 
 @cross_origin
-@app.route("/usuarios/<id_usuario>/productos" , methods=["GET"])
-def listar_productos(id_usuario):
+@app.route("/productos" , methods=["GET"])
+def listar_productos():
     try:
         productos = Producto.query.all()
         productos_data=[]
@@ -73,31 +74,30 @@ def listar_productos(id_usuario):
 
 #------------endpoint para agregar un producto
 @cross_origin
-@app.route("/usuarios/<id_usuario>/productos/agregar" , methods=["POST"])
-def agregar_producto_POST(id_usuario):
+@app.route("/productos" , methods=["POST"])
+def agregar_producto():
     try:
-        if id_usuario == "1":
-            data = request.json
-            nuevo_nombre = data.get('nombre')
-            nuevo_precio =data.get('precio')
-            nueva_cantidad = data.get('cantidad')
-            nueva_imagen= data.get('imagen')
-            nueva_categoria_id=data.get('categoria_id')
-            
-            nuevo_producto=Producto(nombre=nuevo_nombre,precio=nuevo_precio,cantidad=nueva_cantidad,imagen=nueva_imagen,categoria_id=nueva_categoria_id)
         
-            db.session.add(nuevo_producto)
-            db.session.commit()
-            return jsonify({"id":nuevo_producto.id,"nombre":nuevo_producto.nombre,"precio":nuevo_producto.precio,"cantidad":nuevo_producto.cantidad,"imagen":nuevo_producto.imagen,"categoria_id":nuevo_producto.categoria_id})
-        else:
-            return jsonify({"mensaje":"eeey, tu no puedes crear un producto"})
+        data = request.json
+        nuevo_nombre = data.get('nombre')
+        nuevo_precio =data.get('precio')
+        nueva_cantidad = data.get('cantidad')
+        nueva_imagen= data.get('imagen')
+        nueva_categoria_id=data.get('categoria_id')
+        
+        nuevo_producto=Producto(nombre=nuevo_nombre,precio=nuevo_precio,cantidad=nueva_cantidad,imagen=nueva_imagen,categoria_id=nueva_categoria_id)
+    
+        db.session.add(nuevo_producto)
+        db.session.commit()
+        return jsonify({"id":nuevo_producto.id,"nombre":nuevo_producto.nombre,"precio":nuevo_producto.precio,"cantidad":nuevo_producto.cantidad,"imagen":nuevo_producto.imagen,"categoria_id":nuevo_producto.categoria_id})
+
     except:
         return jsonify({"mensaje":"no se pudo agregar el producto."})
 
 #------------endpoint para ver un producto especifico
 @cross_origin
-@app.route("/usuarios/<id_usuario>/productos/<id_producto>" , methods=["GET"])
-def ver_producto(id_usuario,id_producto):
+@app.route("/productos/<id_producto>" , methods=["GET"])
+def ver_producto(id_producto):
     
     
     try:
@@ -130,9 +130,11 @@ def ver_producto(id_usuario,id_producto):
 
 #------------endpoint agregar un comentario en el producto
 @cross_origin
-@app.route("/usuarios/<id_usuario>/productos/<id_producto>" , methods=["POST"])
-def agregar_comentario(id_usuario,id_producto):
+@app.route("/productos/<id_producto>" , methods=["POST"])
+def agregar_comentario(id_producto):
     try:
+        id_usuario=request.args.get('id_usuario')
+
         usuario=Usuario.query.get(id_usuario)
         data=request.json
         comentario=data.get('comentario')
@@ -146,9 +148,10 @@ def agregar_comentario(id_usuario,id_producto):
 
 #------------endpoint borrar un producto
 @cross_origin
-@app.route("/usuarios/<id_usuario>/productos/<id_producto>" , methods=["DELETE"])
-def eliminar_producto(id_usuario,id_producto):
+@app.route("/productos/<id_producto>" , methods=["DELETE"])
+def eliminar_producto(id_producto):
     try:
+        id_usuario=request.args.get('id_usuario')
         if id_usuario == "1":
             producto = Producto.query.get(id_producto)
             db.session.delete(producto)
@@ -166,9 +169,13 @@ def eliminar_producto(id_usuario,id_producto):
 
 #------------endpoint para comprar un producto y que me de la info de ese producto
 @cross_origin
-@app.route("/usuarios/<id_usuario>/productos/<id_producto>/comprar" , methods=["GET"])
-def comprar_GET(id_usuario,id_producto):
+@app.route("/productos/comprar/<id_producto>" , methods=["GET"])
+def comprar_GET(id_producto):
     try:
+
+        id_usuario=request.args.get('id_usuario')
+        
+
         producto = Producto.query.get(id_producto)
         
         categoria=Categoria.query.get(producto.categoria_id)
@@ -187,9 +194,11 @@ def comprar_GET(id_usuario,id_producto):
 
 #------------endpoint para comprar un producto y actualizar en la base de datos la cantidad del producto que queda
 @cross_origin
-@app.route("/usuarios/<id_usuario>/productos/<id_producto>/comprar" , methods=["PUT"])
-def comprar_PUT(id_usuario,id_producto):
+@app.route("/productos/comprar/<id_producto>" , methods=["PUT"])
+def comprar_PUT(id_producto):
     try:
+        id_usuario=request.args.get('id_usuario')
+
         producto=Producto.query.get(id_producto)
         data= request.json
         cantidad_comprada=data.get('cantidad')
@@ -204,10 +213,11 @@ def comprar_PUT(id_usuario,id_producto):
 
 #------------endpoint para obtener los datos del producto a editar
 @cross_origin
-@app.route("/usuarios/<id_usuario>/productos/<id_producto>/editar" , methods=["GET"])
-def editar_GET(id_usuario,id_producto):
+@app.route("/productos/editar/<id_producto>" , methods=["GET"])
+def editar_GET(id_producto):
     try:
-        if id_usuario=="1":
+            id_usuario=request.args.get('id_usuario')
+
             producto = Producto.query.get(id_producto)
             categoria_id_producto=Categoria.query.get(producto.categoria_id)
 
@@ -228,19 +238,18 @@ def editar_GET(id_usuario,id_producto):
                 }
                 categorias_data.append(categoria_data)
             return jsonify(producto_data,categorias_data)
-        else:
-            return jsonify({"mensaje":"eeeey, tu no tienes acceso a editar el producto"})
+        
     except:
         return jsonify({"mensaje":"error en editar GET"})
 
 #------------endpoint para editar los datos de un producto
 @cross_origin
-@app.route("/usuarios/<id_usuario>/productos/<id_producto>/editar" , methods=["PUT"])
-def editar_PUT(id_usuario,id_producto):
+@app.route("/productos/editar/<id_producto>" , methods=["PUT"])
+def editar_PUT(id_producto):
     try:
-        if id_usuario == "1":
+            id_usuario=request.args.get('id_usuario')
+        
             producto=Producto.query.get(id_producto)
-
             data=request.json
             nombre=data.get('nombre')
             precio=data.get('precio')
@@ -256,8 +265,7 @@ def editar_PUT(id_usuario,id_producto):
 
             db.session.commit()
             return jsonify({"comentario":"Exito al editar el producto"})
-        else:
-            return jsonify({"comentario":"eeey, tu no puedes editar el producto"})
+        
     except:
         return jsonify({"mensaje":"error al editar el producto"})
 
