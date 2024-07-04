@@ -143,6 +143,43 @@ def agregar_comentario(id_usuario,id_producto):
     except:
         return jsonify({"mensaje":"no se pudo subir el comentario"})
 
+#------------endpoint para comprar un producto y que me de la info de ese producto
+@cross_origin
+@app.route("/usuarios/<id_usuario>/productos/<id_producto>/comprar" , methods=["GET"])
+def confirmar_compra(id_usuario,id_producto):
+    try:
+        producto = Producto.query.get(id_producto)
+        
+        categoria=Categoria.query.get(producto.categoria_id)
+        
+        producto_data={
+            "nombre":producto.nombre,
+            "precio":producto.precio,
+            "cantidad":producto.cantidad,
+            "imagen":producto.imagen,
+            "categoria":categoria.categoria
+        }
+        
+        return jsonify(producto_data)
+    except:
+        return jsonify({"mensaje":"no se pudo obtener el producto especifico"})
+
+#------------endpoint para comprar un producto y actualizar en la base de datos la cantidad del producto que queda
+@cross_origin
+@app.route("/usuarios/<id_usuario>/productos/<id_producto>/comprar" , methods=["PUT"])
+def comprar(id_usuario,id_producto):
+    try:
+        producto=Producto.query.get(id_producto)
+        data= request.json
+        cantidad_comprada=data.get('cantidad')
+        producto.cantidad -= cantidad_comprada
+        db.session.commit()
+        
+        
+        return jsonify({"comentario":"Compra exitosa"})
+    except:
+        return jsonify({"comentario":"Compra fallida"})
+    
 
 if __name__ == '__main__':
     db.init_app(app)
