@@ -139,7 +139,7 @@ def agregar_comentario(id_usuario,id_producto):
         nuevo_comentario=Comentario(user_id=id_usuario,nombre_usuario=usuario.nombre,apellido_usuario=usuario.apellido,producto_id=id_producto,comentario=comentario)
         db.session.add(nuevo_comentario)
         db.session.commit()
-        return jsonify({"user_id":nuevo_comentario.user_id,"nombre_usuario":nuevo_comentario.nombre_usuario,"apellido_usuario":nuevo_comentario.apellido_usuario,"producto_id":nuevo_comentario.producto_id,"comentario":comentario})
+        return jsonify({"id":nuevo_comentario.id,"user_id":nuevo_comentario.user_id,"nombre_usuario":nuevo_comentario.nombre_usuario,"apellido_usuario":nuevo_comentario.apellido_usuario,"producto_id":nuevo_comentario.producto_id,"comentario":comentario})
     except:
         return jsonify({"mensaje":"no se pudo subir el comentario"})
 
