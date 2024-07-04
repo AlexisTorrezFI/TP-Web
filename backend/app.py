@@ -94,6 +94,40 @@ def agregar_producto(id_usuario):
     except:
         return jsonify({"mensaje":"no se pudo agregar el producto."})
 
+#------------endpoint para ver un producto especifico
+@cross_origin
+@app.route("/usuarios/<id_usuario>/productos/<id_producto>" , methods=["GET"])
+def ver_producto(id_usuario,id_producto):
+    
+    
+    try:
+        producto = Producto.query.get(id_producto)
+        
+        categoria=Categoria.query.get(producto.categoria_id)
+        
+        producto_data={
+            "nombre":producto.nombre,
+            "precio":producto.precio,
+            "cantidad":producto.cantidad,
+            "imagen":producto.imagen,
+            "categoria":categoria.categoria,
+            "comentarios":[]
+        }
+        for comentario in producto.comentarios:
+            comentario_data={
+                "id":comentario.id,
+                "user_id":comentario.user_id,
+                "nombre":comentario.nombre_usuario,
+                "apellido":comentario.apellido_usuario,
+                "producto_id":comentario.producto_id,
+                "comentario":comentario.comentario,
+            }
+            producto_data['comentarios'].append(comentario_data)
+        
+        return jsonify(producto_data)
+    except:
+        return jsonify({"mensaje":"no se pudo obtener el producto especifico"})
+
 
 if __name__ == '__main__':
     db.init_app(app)
