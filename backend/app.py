@@ -144,7 +144,24 @@ def agregar_comentario(id_usuario,id_producto):
         return jsonify({"mensaje":"no se pudo subir el comentario"})
 
 
+#------------endpoint borrar un producto
+@cross_origin
+@app.route("/usuarios/<id_usuario>/productos/<id_producto>" , methods=["DELETE"])
+def eliminar_producto(id_usuario,id_producto):
+    try:
+        if id_usuario == "1":
+            producto = Producto.query.get(id_producto)
+            db.session.delete(producto)
+            db.session.commit()
 
+
+            return jsonify({"mensaje":"eliminado con exito"})
+        else:
+            return jsonify({"mensaje":"Ey, tu no puedes hacer esto"})
+    except:
+        return jsonify({"mensaje":"error al querer eliminar el producto"})
+
+        
 
 
 #------------endpoint para comprar un producto y que me de la info de ese producto
