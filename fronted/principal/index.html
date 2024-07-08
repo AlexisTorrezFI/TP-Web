@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="home.css">
+</head>
+<body id="body">
+    <nav id="navbar">
+        <a href="../#usuarios">Cambiar de usuario</a>
+    </nav>
+    <header>
+        <h1>Lista de los productos</h1>
+    </header>
+    <section id="productos">
+
+
+    </section>
+    
+
+
+    <script>
+        //tengo el iide del usuario para habilitar cosas
+        let parametros = new URLSearchParams(location.search)
+        let id_user = parametros.get('id_user')
+        //habilito un boton agregar para agregar productos si el id del usuario es = 1
+        if(id_user == 1){
+            let navabar = document.getElementById("navbar")
+            let boton_agregar = document.createElement("a")
+            boton_agregar.setAttribute("href","agregar")
+            boton_agregar.innerText="Agregar Producto"
+            navabar.append(boton_agregar)
+            
+        }
+
+        function manejar_datos(productos){
+            //busco donde va a ir todos los productos
+            let caja_productos=document.getElementById("productos")
+            
+            /*
+            si el id_user es igual a 1 pongo los productos en tarjetas y muestro tambien los que
+            ya no tienen stock disponible y que al clickear las tarjetas lo lleven  a
+            una pagina donde puede editar ese producto o borrarlo
+            */
+           /*
+           si el id_user es distinto a 1 y el stock producto es > 0 , entonces
+           muestro las tarjetas de los productos que estan disponibles
+           */
+            if( id_user==1){
+                for(let index=0; index<productos.length;index++){
+                    let card = document.createElement("a")
+                    if(productos[index].cantidad == 0 ){
+                        card.setAttribute("class","card vendido")
+                    }else{
+                        card.setAttribute("class","card")
+                    }
+                    card.setAttribute("href",`producto/editar?id_producto=${productos[index].id}`)
+
+                    let imagen = document.createElement("img")
+                    imagen.setAttribute("src",`${productos[index].imagen}`)
+
+                    let body_card = document.createElement("div")
+                    body_card.setAttribute("class","body-card")
+
+                    let nombre = document.createElement("h4")
+                    nombre.innerText=`${productos[index].nombre}`
+                    let precio = document.createElement("p")
+                    precio.innerHTML=`<span>Precio:</span> $${productos[index].precio}`
+                    let cantidad=document.createElement("p")
+                    cantidad.innerHTML=`<span>Cantidad:</span> ${productos[index].cantidad}`
+                    body_card.append(nombre)
+                    body_card.append(precio)
+                    body_card.append(cantidad)
+                    card.append(imagen)
+                    card.append(body_card)
+                    caja_productos.append(card)
+                    
+
+
+
+                }
+            }else if(id_user != 1){
+
+                for(let index=0; index<productos.length;index++){
+                    /*
+                    si hay stock del producto lo muestro en una tarjeta y lo agrego 
+                    la lista de productos
+                    */
+                    if(productos[index].cantidad > 0){
+                        let card = document.createElement("a")
+                        card.setAttribute("class","card")
+                        
+                        card.setAttribute("href",`producto?id_producto=${productos[index].id}&id_user=${id_user}`)
+                        let imagen = document.createElement("img")
+                        imagen.setAttribute("src",`${productos[index].imagen}`)
+        
+                        let body_card = document.createElement("div")
+                        body_card.setAttribute("class","body-card")
+        
+                        let nombre = document.createElement("h4")
+                        nombre.innerText=`${productos[index].nombre}`
+                        let precio = document.createElement("p")
+                        precio.innerHTML=`<span>Precio:</span> $${productos[index].precio}`
+                        let cantidad=document.createElement("p")
+                        cantidad.innerHTML=`<span>Cantidad:</span> ${productos[index].cantidad}`
+                        body_card.append(nombre)
+                        body_card.append(precio)
+                        body_card.append(cantidad)
+                        card.append(imagen)
+                        card.append(body_card)
+                        caja_productos.append(card)
+                    }
+                    
+
+                }
+                
+            }
+
+        }
+
+        fetch("http://localhost:5000/productos")
+            .then(respuesta_recibida)
+            .then(manejar_datos)
+            .catch(error_en_la_respuesta)
+
+            function respuesta_recibida(data){
+                return data.json()
+            }
+            function error_en_la_respuesta(error){
+                console.log(error)
+                
+            }
+    </script>
+</body>
+</html>

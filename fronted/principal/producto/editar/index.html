@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="editar.css">
+    <title>Document</title>
+</head>
+<body>
+    <main>
+        <h1>Editar Producto</h1>
+        <form onsubmit="editar_producto(event)">
+            <label for="nombre_producto">Nombre del producto</label>
+            <input type="text" id="nombre_producto" name="nombre_producto" required>
+            <label for="precio_producto">Precio del producto</label>
+            <input type="number" id="precio_producto" name="precio_producto" required>
+            <label for="cantidad_producto">Cantidad de productos</label>
+            <input type="number" id="cantidad_producto" name="cantidad_producto" required>
+            <label for="imagen_producto">Imagen del producto</label>
+            <input type="text" id="imagen_producto" name="imagen_producto" required>
+            <label for="categorias" >Categoria del producto</label>
+            <div id="categorias">
+
+            </div>
+            <div class="contenedor_de_botones">
+                <button type="button" id="borrar">Borrar</button>
+                <button type="button" id="cancelar">Cancelar</button>
+                <button type="submit" >Confirmar</button>
+            </div>
+            
+
+        </form>
+    </main>
+
+
+
+    <script>
+        const parametros = new URLSearchParams(location.search)
+        let id_producto = parametros.get("id_producto")
+        
+        //boton cancelar
+        const boton_cancelar = document.getElementById("cancelar")
+        boton_cancelar.addEventListener("click",function(){if(confirm("¿Seguro que quieres cancelar?")){window.location.href="../../?id_user=1"}})
+
+        //boton borrar
+        const boton_borrar = document.getElementById("borrar")
+        boton_borrar.addEventListener("click",borrar_producto)
+        function borrar_producto(){
+            if(confirm("¿Seguro que quieres borrar el producto?")){
+                fetch(`http://localhost:5000/productos/${id_producto}`,{
+                    method:"DELETE"
+                }).then((data_recibida)=>data_recibida.json())
+                .then((data)=>console.log(data))
+                .catch((error)=>console.log("eror al eliminar"))
+                //window.location.href="../../?id_user=1"
+
+            }
+        }
+
+
+        function editar_producto(event){
+            event.preventDefault()
+
+            const formData = new FormData(event.target)
+
+            const nombre= formData.get("nombre_producto")
+            const precio= formData.get("precio_producto")
+            const cantidad= formData.get("cantidad_producto")
+            const imagen= formData.get("imagen_producto")
+            const categoria_id= formData.get("categoria")
+
+            fetch(`http://localhost:5000/productos/editar/${id_producto}`,{
+                method:"PUT",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body: JSON.stringify({
+                    nombre:nombre,
+                    precio:precio,
+                    cantidad:cantidad,
+                    imagen:imagen,
+                    categoria_id:categoria_id
+                })
+            })
+            .then((res)=>res.json())
+            .then(manejar_respuesta)
+            .catch((error)=>console.log("erorr",error))
+            function manejar_respuesta(){
+                alert("Producto editado correctamente")
+            }
+            
+        }
+
+
+        function añadir_categorias_y_valores_default(contenido){
+            //creo categorias
+            
+            let lista_categorias = contenido[1]
+            let categorias = document.getElementById("categorias")
+            for(let index=0;index < lista_categorias.length;index++){
+                
+                let label=document.createElement("label")
+                label.setAttribute("for",`categoria_${lista_categorias[index].id}`)
+                label.innerText=`${lista_categorias[index].categoria}`
+
+                let input= document.createElement("input")
+                input.setAttribute("type","radio")
+                input.setAttribute("id",`categoria_${lista_categorias[index].id}`)
+                input.setAttribute("name","categoria")
+                input.setAttribute("value",`${lista_categorias[index].id}`)
+                input.required=true
+                if(contenido[0].categoria_id==lista_categorias[index].id){
+                    input.setAttribute("checked","")
+                }
+                
+                categorias.append(label)
+                categorias.append(input)
+
+            }
+            //valores deafult del producto
+            let nombre_producto = document.getElementById("nombre_producto")
+            nombre_producto.setAttribute("value",`${contenido[0].nombre}`)
+            let precio_producto = document.getElementById("precio_producto")
+            precio_producto.setAttribute("value",`${contenido[0].precio}`)
+            let cantidad_producto = document.getElementById("cantidad_producto")
+            cantidad_producto.setAttribute("value",`${contenido[0].cantidad}`)
+            if(contenido[0].imagen != null){
+                let imagen_producto = document.getElementById("imagen_producto")
+                imagen_producto.setAttribute("value",`${contenido[0].imagen}`)
+            }
+        }
+
+        fetch(`http://localhost:5000/productos/editar/${id_producto}`)
+        .then((data)=>data.json())
+        .then(añadir_categorias_y_valores_default)
+        .catch((error)=>{console.log("error",error)})
+
+
+    </script>
+</body>
+</html>

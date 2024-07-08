@@ -1,0 +1,77 @@
+*{
+    box-sizing: inherit;
+    margin: 0;
+    padding: 0;
+    color: white;
+}
+
+body{
+    background-color: black;
+    background-image:linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),url(../../../fotos/fondo_prueba.png);
+    background-size:contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    display: flex;
+    justify-content: left;
+    
+    box-sizing: border-box;
+
+}
+
+main{
+    padding: 40px 50px 0px 50px;
+    display: block;
+    text-align:start;
+    
+    width: 700px;
+}
+h1{
+    display: block;
+    font-size: 50px;
+    margin-bottom: 40px;
+}
+
+label{
+    font-size: 20px;
+    font-weight: 900;
+    display: block;
+}
+input{
+    height: 30px;
+    width: 100%;
+    display: inline-block;
+    margin-bottom: 15px;
+    font-size: 15px;
+    color: black;
+}
+div{
+    flex-wrap: wrap;
+    margin-top: 25px;
+    margin-bottom: 30px;
+}
+div > input{
+    width: 20px;
+    height: 20px;
+    display: inline;
+    margin-right: 20px;
+    margin-left: 10px;
+}
+div >label{
+    display: inline;
+    font-weight: 500;
+    
+}
+.contenedor_de_botones{
+    margin:0;
+    width: 100%;
+    display: flex;
+    justify-content: end;
+}
+button{
+    
+    margin-left: 20px;
+    height: 40px;
+    width: 80px;
+    color: black;
+}
+

@@ -1,0 +1,133 @@
+*{
+    box-sizing: inherit;
+    margin: 0;
+    padding: 0;
+}
+
+html{
+    
+    box-sizing: border-box;
+    
+}
+nav{
+    background-color: black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100px;
+    border-bottom: 2px solid black;
+}
+h1{
+    color: white;
+    font-size: 40px;
+}
+main{
+    
+
+    display: flex;
+    flex-wrap: wrap;
+}
+#producto{
+    
+    width: 50%;
+    min-width: 500px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+img{
+    width: 50%;
+    height: 400px;
+}
+.info_producto{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: space-between;
+    padding: 20px 0px 20px 20px;
+    width:50%;
+    height: 400px;
+}
+.info_arriba{
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+.nombre_producto{
+    font-weight: 900;
+    font-size: 50px;
+}
+.stock{
+    font-size: 20px;
+    font-weight: 900;
+}
+.boton_comprar_abajo{
+    width: 100%;
+    height: 50%;
+    display: inline-flex;
+    justify-content: end;
+    align-items: end;
+    padding-right: 20px;
+    
+    
+}
+.boton_comprar_abajo > a{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    height: 60px;
+    width: 80px;
+    color: black;
+    background-color: white;
+    border: 2px solid black;
+}
+
+.comentarios{
+    display: flex;
+border-left: 1px black solid;
+    padding: 20px 0px 20px 20px;
+    
+    flex-direction: column;
+}
+h2{
+    font-size: 40px;
+    margin-bottom: 40px;
+}
+.agregar_comentarios{
+    height: 150px;
+    
+}
+.agregar_comentarios > div{
+    display: flex;
+    align-items:start;
+    justify-content: space-between;
+}
+.agregar_comentarios > input{
+    height: 80px;
+    width: 100%;
+    min-width: 500px;
+    border: 3px solid black;
+}
+.agregar_comentarios > div > button{
+    background-color: white;
+    border: 1px solid black;
+    height: 30px;
+    width: 60px;
+}
+.agregar_comentarios > div > button:hover{
+    background-color: red;
+}
+#todos_los_comentarios{
+    display: flex;
+    flex-direction: column;
+}
+#todos_los_comentarios > div{
+    padding: 5px;
+    margin-top: 20px;
+    border: 2px solid black;
+}
+.nombre_usuario{
+    text-decoration:underline;
+}

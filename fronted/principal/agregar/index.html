@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="agregar.css">
+    <title>Agregar</title>
+</head>
+<body>
+    <main>
+        <h1>Agregar Producto</h1>
+        <form id="formulario" onsubmit="agregar_producto(event)">
+            <label for="nombre_producto">Nombre del producto</label>
+            <input type="text" id="nombre_producto" name="nombre_producto" required>
+            <label for="precio_producto">Precio del producto</label>
+            <input type="number" id="precio_producto" name="precio_producto" required>
+            <label for="cantidad_producto">Cantidad de productos</label>
+            <input type="number" id="cantidad_producto" name="cantidad_producto" required>
+            <label for="imagen_producto">Imagen del producto</label>
+            <input type="text" id="imagen_producto" name="imagen_producto" required>
+            <label for="categorias" >Categoria del producto</label>
+            <div id="categorias">
+
+            </div>
+            <div class="contenedor_de_botones">
+                <button type="button" id="cancelar">Cancelar</button>
+
+                <button type="submit" >Agregar</button>
+            </div>
+            
+
+        </form>
+    </main>
+    
+
+
+    <script>
+        //boton de cancelar que te manda atras si confirmas
+        const boton_cancelar = document.getElementById("cancelar")
+        boton_cancelar.addEventListener("click",function(){if(confirm("¿Seguro que quieres cancelar?")){window.location.href="../?id_user=1"}})
+
+        //subir la informacion a un endpoint para que agregue el producto
+        function agregar_producto(event){
+            event.preventDefault()
+
+            const formData = new FormData(event.target)
+
+            const nombre= formData.get("nombre_producto")
+            const precio= formData.get("precio_producto")
+            const cantidad= formData.get("cantidad_producto")
+            const imagen= formData.get("imagen_producto")
+            const categoria_id= formData.get("categoria")
+
+            fetch("http://localhost:5000/productos/crear",{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body: JSON.stringify({
+                    nombre:nombre,
+                    precio:precio,
+                    cantidad:cantidad,
+                    imagen:imagen,
+                    categoria_id:categoria_id
+                })
+            })
+            .then((res)=>res.json())
+            .then(manejar_respuesta)
+            .catch((error)=>console.log("erorr",error))
+            function manejar_respuesta(contenido){
+                alert(contenido.mensaje)
+                //pongo los valores en nulo
+                let formulario=document.getElementById("formulario")
+                formulario.reset()
+
+            }
+            
+        }
+
+
+        function manejar_categorias(contenido){
+            let categorias = document.getElementById("categorias")
+            for(let index=0;index < contenido.length;index++){
+                
+                let label=document.createElement("label")
+                label.setAttribute("for",`categoria_${contenido[index].id}`)
+                label.innerText=`${contenido[index].categoria}`
+
+                let input= document.createElement("input")
+                input.setAttribute("type","radio")
+                input.setAttribute("id",`categoria_${contenido[index].id}`)
+                input.setAttribute("name","categoria")
+                input.setAttribute("value",`${contenido[index].id}`)
+                console.log(contenido[index].id)
+                input.required=true
+                
+                categorias.append(label)
+                categorias.append(input)
+
+            }
+        }
+
+        fetch("http://localhost:5000/productos/crear")
+        .then((data)=>data.json())
+        .then(manejar_categorias)
+        .catch((error)=>{console.log("error",error)})
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="producto.css">
+    <title>Producto</title>
+</head>
+<body>
+    <nav>
+        <h1>Informacion del producto</h1>
+    </nav>
+    <main>
+        <div id="producto">
+
+        </div>
+        
+        <section class="comentarios">
+            <h2>Comentarios</h2>
+            <form class="agregar_comentarios" onsubmit="agregar_comentario(event)">
+                <div>
+                    <label for="input_comentario">Escribe tu comentario aqui!</label>
+                    <button type="submit">Agregar</button>
+                </div>
+                <input type="text" id="input_comentario" name="input_comentario" placeholder="Ej: Es maravilloso" required>
+            </form>
+            <div id="todos_los_comentarios">
+
+            </div>
+    
+        </section>
+    </main>
+    
+
+    <script>
+
+        //saco de los query params el id del producto y del usuario
+        let parametros = new URLSearchParams(location.search)
+        let id_producto = parametros.get('id_producto')
+        let id_user = parametros.get('id_user')
+
+        //al tocar el boton de agregar comentario, se hace un post con el comentario
+        function agregar_comentario(event){
+            
+            event.preventDefault()
+
+            const formData = new FormData(event.target)
+
+            const comentario= formData.get("input_comentario")
+            
+
+            fetch(`http://localhost:5000/productos/${id_producto}?id_usuario=${id_user}`,{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body: JSON.stringify({
+                    comentario:comentario
+                })
+            })
+            .then((res)=>res.json())
+            .then(manejar_respuesta)
+            .catch((error)=>console.log("erorr al agregar el comentario",error))
+            
+            function manejar_respuesta(contenido){
+                alert(contenido.mensaje)
+            }
+
+        }
+
+
+
+        function parse_data(contenido){
+
+
+            
+            // producto
+            const producto= document.getElementById("producto")
+
+            let imagen=document.createElement("img")
+            imagen.setAttribute("src",`${contenido.imagen}`)
+
+            let info_producto=document.createElement("div")
+            info_producto.setAttribute("class","info_producto")
+
+            let info_arriba=document.createElement("div")
+            info_arriba.setAttribute("class","info_arriba")
+
+            let nombre_producto=document.createElement("h3")
+            nombre_producto.setAttribute("class","nombre_producto")
+            nombre_producto.innerText=`${contenido.nombre}`
+
+            let stock = document.createElement("p")
+            stock.innerHTML=`<span class="stock">Stock:</span>${contenido.cantidad} unidades`
+
+            let precio = document.createElement("p")
+            precio.setAttribute("class","precio")
+            precio.innerText=`Precio : ${contenido.precio}`
+
+            info_arriba.append(nombre_producto)
+            info_arriba.append(stock)
+            info_arriba.append(precio)
+
+            let boton_comprar = document.createElement("div")
+            boton_comprar.setAttribute("class","boton_comprar_abajo")
+            boton_comprar.innerHTML=`<a href="comprar?id_producto=${id_producto}&id_user=${id_user}" type="button">Comprar</a>`
+
+            info_producto.append(info_arriba)
+            info_producto.append(boton_comprar)
+            producto.append(imagen)
+            producto.append(info_producto)
+
+            //comentarios
+
+            const comentarios=document.getElementById("todos_los_comentarios")
+
+            for(let index=0;index < contenido.comentarios.length;index++){
+                let caja_comentario=document.createElement("div")
+                caja_comentario.setAttribute("id",`${contenido.comentarios[index].id}`)
+                
+                let nombre_usuario = document.createElement("p")
+                nombre_usuario.setAttribute("class","nombre_usuario")
+                if(contenido.comentarios[index].apellido ==null){
+                    nombre_usuario.innerText=`${contenido.comentarios[index].nombre}`
+                }else{
+                    nombre_usuario.innerText=`${contenido.comentarios[index].nombre} ${contenido.comentarios[index].apellido}`
+                }
+
+                let comentario=document.createElement("p")
+                comentario.innerText=`${contenido.comentarios[index].comentario}`
+
+                caja_comentario.append(nombre_usuario)
+                caja_comentario.append(comentario)
+                comentarios.append(caja_comentario)
+            }
+
+        }
+
+        fetch(`http://localhost:5000/productos/${id_producto}?id_user=${id_user}`)
+            .then(respuesta_recibida)
+            .then(parse_data)
+            .catch(error_en_la_respuesta)
+
+            function respuesta_recibida(data){
+                return data.json()
+            }
+            function error_en_la_respuesta(){
+                console.log("Error en el fetch")
+            }
+    </script>
+</body>
+</html>

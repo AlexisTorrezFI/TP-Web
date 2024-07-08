@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="usuario.css">
+    <title>Crear Usuario</title>
+</head>
+<body>
+    <main>
+        <h1>Agregar Producto</h1>
+        <form onsubmit="crear_usuario(event)">
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" name="nombre" required>
+            <label for="apellido">Apellido</label>
+            <input type="text" id="apellido" name="apellido">
+            </div>
+            <div class="contenedor_de_botones">
+                <button type="button" id="cancelar">Cancelar</button>
+                <button type="submit" >Agregar</button>
+            </div>
+            
+
+        </form>
+    </main>
+
+
+
+
+    <script>
+        //obtengo el boton cancelar
+        const boton_cancelar = document.getElementById("cancelar")
+        /*
+        le pongo que cuando clickee en el boton cancelar le salga un cartel de confirmar
+        y si pone que si lo lleva a la lista de usuarios
+        y si pone que no se queda en la pagina
+        */
+        boton_cancelar.addEventListener("click",function(){if(confirm("¿Seguro que quieres cancelar?")){window.location.href="../"}})
+        
+        
+        function confirmar_creacion_de_usuario(content){
+            window.alert(content.mensaje)
+            location.href="http://localhost:8000"
+        }
+
+        /*
+        cuando le da al boton de agregar , se usa la siguien funcion
+        para recibir los datos de los inputs y subirlos con el metodo post
+        a un endpoint que agregar el usuario a la base de datos
+        */
+        function crear_usuario(event){
+            event.preventDefault()
+
+            const formData = new FormData(event.target)
+
+            const nombre= formData.get("nombre")
+            const apellido= formData.get("apellido")
+
+            fetch("http://localhost:5000/usuarios",{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body: JSON.stringify({
+                    nombre:nombre,
+                    apellido:apellido
+                })
+            })
+            .then((res)=>res.json())
+            .then(confirmar_creacion_de_usuario)
+            .catch((error)=>console.log("erorr",error))
+        }
+
+    </script>
+    
+</body>
+</html>

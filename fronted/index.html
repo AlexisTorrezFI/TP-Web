@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delling</title>
+    <link rel="stylesheet" href="delling.css">
+</head>
+<body>
+
+
+
+
+
+
+
+    <nav><a class="link_usuario" href="#usuarios">Elegir Usuario</a></nav>
+    <header>
+        <h1>Delling</h1>
+    </header>
+    <main>
+        <div class="card_right">
+            <img src="fotos/foto1.jpg" alt="">
+            <p>¡Bienvenido a Delling! Descubre nuestra colección exclusiva de moda para todos los estilos y ocasiones.</p>
+        </div>
+        <div class="card_left">
+            <img src="fotos/foto2.png" alt="">
+            <p>"En Delling, nos dedicamos a ofrecer prendas de alta calidad que combinan estilo y comodidad."</p>
+        </div>
+        <div class="card_right">
+            <img src="fotos/foto1.jpg" alt="">
+            <p>¡Bienvenido a Delling! Descubre nuestra colección exclusiva de moda para todos los estilos y ocasiones.</p>
+        </div>
+    </main>
+    <div class="segundo_header">
+        <h2>Tenemos las mejores zapatillas y prendas para vos</h2>
+    </div>
+    <section id="usuarios">
+        <div class="box_usuarios">
+            <h3>Ingrese con su usuario</h3>
+            <ul id="lista_usuarios">
+                
+            </ul>
+            <a href="crear/index.html"><button>Crear un usuario</button></a>
+        </div>
+        
+    </section>
+    
+
+
+
+
+
+    <script>
+        function manejar_los_datos(usuarios){
+            //obtengo la cajita donde van a ir los usuarios
+            let lista_de_usuarios = document.getElementById('lista_usuarios')
+            
+
+            
+            //agrego cada usuario que haya en la cajita
+            for(let index = 0 ; index < usuarios.length; index++){
+                //creo un li
+                let list_item = document.createElement("li")
+                //saco el id del usuario
+                let id_user = usuarios[index].id
+                //obtengo nombre y apellido
+                let nombre = usuarios[index].nombre
+                let apellido = usuarios[index].apellido
+                /*
+                agrego dentro del li un <a> que al clicker vaya a la pagina principal de los
+                productos con el id en forma de query param en la url
+                y le pongo dentro del <a> el nombre y apellido si lo tiene
+                */ 
+                if (apellido == null){
+                    list_item.innerHTML=`<a href="principal?id_user=${id_user}">${nombre}</a>`
+                }else{
+                    list_item.innerHTML=`<a href="principal?id_user=${id_user}">${nombre} ${apellido}</a>`
+                }
+
+                lista_de_usuarios.append(list_item)
+            }
+        }
+
+
+        fetch("http://localhost:5000/usuarios")
+        .then(respuesta_recibida)
+        .then(manejar_los_datos)
+        .catch(error_en_la_respuesta)
+
+        function respuesta_recibida(data){
+            return data.json()
+        }
+        function error_en_la_respuesta(eror){
+            console.log(eror)
+        }
+    </script>
+</body>
+</html>

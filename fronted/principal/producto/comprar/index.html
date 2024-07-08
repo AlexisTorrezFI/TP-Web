@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compra</title>
+    <link rel="stylesheet" href="comprar.css">
+</head>
+<body id="body">
+    <div id="imagen">
+        
+    </div>
+    <div class="comprar">
+        <div id="info">
+
+        </div>
+        <form onsubmit="modificar_stock(event)">
+            
+            <label for="cantidad_comprar">Cantidad:</label>
+            <input type="number"  min="1" name="cantidad_comprar" id="cantidad_comprar" required>
+            <button type="submit">Comprar</button>
+        </form>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+        let parametros = new URLSearchParams(location.search)
+        let id_producto = parametros.get("id_producto")
+        let id_usuario= parametros.get("id_user")
+        
+        //modificar el stock al tocar el boton comprar
+        function modificar_stock(event){
+            event.preventDefault()
+            const formData= new FormData(event.target)
+            const cantidad = formData.get("cantidad_comprar")
+            
+             fetch(`http://localhost:5000/productos/comprar/${id_producto}?id_usuario=${id_usuario}`,{
+                method:"PUT",
+                headers:{
+                    "Content-Type" : "application/json"
+                },
+                body:JSON.stringify({
+                    cantidad:cantidad
+                })
+             })
+             .then((res)=>res.json())
+             .then(agredecer_comprar)
+             .catch((error)=>console.log("error en la compra",error))
+
+            function agredecer_comprar(contenido){
+                
+                let body= document.getElementById("body")
+                body.setAttribute("class","mensaje")
+                body.innerHTML= `<h1>Gracias por tu compra ${contenido.nombre}`
+                let button = document.createElement("a")
+                button.setAttribute("type","button")
+                button.setAttribute("href",`../../?id_user=${id_usuario}`)
+                button.innerText="Ver todos los productos"  
+                body.append(button)
+
+            }
+        }
+
+
+
+
+
+
+
+
+        //mostrar los datos del producto
+        function datos_del_producto(contenido){
+            
+            const imagen = document.getElementById("imagen")
+            let imagen_producto=document.createElement("img")
+            imagen_producto.setAttribute("src",`${contenido.imagen}`)
+            imagen.append(imagen_producto)
+
+            const informacion_producto=document.getElementById("info")
+
+            let nombre_producto=document.createElement("h1")
+            nombre_producto.innerText=`${contenido.nombre}`
+            let stock = document.createElement("h3")
+            stock.innerText=`Stock : ${contenido.cantidad}`
+            let precio=document.createElement("h3")
+            precio.innerText=`Precio : ${contenido.precio}`
+
+            informacion_producto.append(nombre_producto)
+            informacion_producto.append(stock)
+            informacion_producto.append(precio)
+            //le asigno un maximo al comprar para que no supere el stock disponible
+            const input = document.getElementById("cantidad_comprar")
+            input.setAttribute("max",`${contenido.cantidad}`)
+        }
+
+
+        
+        fetch(`http://localhost:5000/productos/comprar/${id_producto}?`)
+        .then(data=>(data.json()))
+        .then(datos_del_producto)
+        .catch(error=>(console.log("error")))
+
+
+
+    </script>
+</body>
+</html>

@@ -16,7 +16,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 def nada():
     return 
 
-
+#-------------------------------------------------------------------------------------
 #------------endpoint para obtener lista de los usuarios 
 @cross_origin
 @app.route("/usuarios" , methods=["GET"])
@@ -49,19 +49,22 @@ def crear_usuario():
         db.session.add(nuevo_usuario)
         db.session.commit()
 
-        return jsonify({"id":nuevo_usuario.id,"nombre":nuevo_usuario.nombre,"apellido":nuevo_usuario.apellido})
+        return jsonify({"mensaje":"Usuario creado correctamente"})
     except:
-        return jsonify({"mensaje":"no se puedo crear el usuario."})
+        return jsonify({"mensaje":"No se puedo crear el usuario."})
+
+#-------------------------------------------------------------------------------------
 
 #------------endpoint para obtener la lista de los productos 
 @cross_origin
-@app.route("/productos" , methods=["GET"])
+@app.route("/productos/" , methods=["GET"])
 def listar_productos():
     try:
         productos = Producto.query.all()
         productos_data=[]
         for producto in productos:
             producto_data={
+                "id":producto.id,
                 "nombre":producto.nombre,
                 "precio":producto.precio,
                 "cantidad":producto.cantidad,
@@ -72,27 +75,7 @@ def listar_productos():
     except:
         return jsonify({"mensaje":"no hay ningun producto."})
 
-#------------endpoint para agregar un producto
-@cross_origin
-@app.route("/productos" , methods=["POST"])
-def agregar_producto():
-    try:
-        
-        data = request.json
-        nuevo_nombre = data.get('nombre')
-        nuevo_precio =data.get('precio')
-        nueva_cantidad = data.get('cantidad')
-        nueva_imagen= data.get('imagen')
-        nueva_categoria_id=data.get('categoria_id')
-        
-        nuevo_producto=Producto(nombre=nuevo_nombre,precio=nuevo_precio,cantidad=nueva_cantidad,imagen=nueva_imagen,categoria_id=nueva_categoria_id)
-    
-        db.session.add(nuevo_producto)
-        db.session.commit()
-        return jsonify({"id":nuevo_producto.id,"nombre":nuevo_producto.nombre,"precio":nuevo_producto.precio,"cantidad":nuevo_producto.cantidad,"imagen":nuevo_producto.imagen,"categoria_id":nuevo_producto.categoria_id})
-
-    except:
-        return jsonify({"mensaje":"no se pudo agregar el producto."})
+#-------------------------------------------------------------------------------------
 
 #------------endpoint para ver un producto especifico
 @cross_origin
@@ -126,7 +109,7 @@ def ver_producto(id_producto):
         
         return jsonify(producto_data)
     except:
-        return jsonify({"mensaje":"no se pudo obtener el producto especifico"})
+        return jsonify({"mensaje":"No se pudo obtener el producto especifico"})
 
 #------------endpoint agregar un comentario en el producto
 @cross_origin
@@ -141,31 +124,73 @@ def agregar_comentario(id_producto):
         nuevo_comentario=Comentario(user_id=id_usuario,nombre_usuario=usuario.nombre,apellido_usuario=usuario.apellido,producto_id=id_producto,comentario=comentario)
         db.session.add(nuevo_comentario)
         db.session.commit()
-        return jsonify({"id":nuevo_comentario.id,"user_id":nuevo_comentario.user_id,"nombre_usuario":nuevo_comentario.nombre_usuario,"apellido_usuario":nuevo_comentario.apellido_usuario,"producto_id":nuevo_comentario.producto_id,"comentario":comentario})
+        return jsonify({"mensaje":"Comentario agregado exitosamente"})
     except:
         return jsonify({"mensaje":"no se pudo subir el comentario"})
 
+#-------------------------------------------------------------------------------------
+
+#------------endpoint para obtener las categorias de productos
+@cross_origin
+@app.route("/productos/crear" , methods=["GET"])
+def obtener_categorias():
+    try:
+        categorias=Categoria.query.all()
+
+        categorias_data=[]
+        for categoria in categorias:
+            categoria_data={
+                "id":categoria.id,
+                "categoria":categoria.categoria
+            }
+            categorias_data.append(categoria_data)
+
+        return jsonify(categorias_data)
+    except:
+        return
+
+#------------endpoint para agregar un producto
+@cross_origin
+@app.route("/productos/crear" , methods=["POST"])
+def agregar_producto():
+    try:
+        
+        data = request.json
+
+        nuevo_nombre = data.get('nombre')
+        nuevo_precio =data.get('precio')
+        nueva_cantidad = data.get('cantidad')
+        nueva_imagen= data.get('imagen')
+        nueva_categoria_id=data.get('categoria_id')
+        
+        nuevo_producto=Producto(nombre=nuevo_nombre,precio=nuevo_precio,cantidad=nueva_cantidad,imagen=nueva_imagen,categoria_id=nueva_categoria_id)
+    
+        db.session.add(nuevo_producto)
+        db.session.commit()
+        return jsonify({"mensaje":"Producto agregado correctamente"})
+
+    except:
+        return jsonify({"mensaje":"no se pudo agregar el producto."})
+
+#-------------------------------------------------------------------------------------
 
 #------------endpoint borrar un producto
 @cross_origin
 @app.route("/productos/<id_producto>" , methods=["DELETE"])
 def eliminar_producto(id_producto):
     try:
-        id_usuario=request.args.get('id_usuario')
-        if id_usuario == "1":
-            producto = Producto.query.get(id_producto)
-            db.session.delete(producto)
-            db.session.commit()
+        
+        producto = Producto.query.get(id_producto)
+        db.session.delete(producto)
+        db.session.commit()
 
 
-            return jsonify({"mensaje":"eliminado con exito"})
-        else:
-            return jsonify({"mensaje":"Ey, tu no puedes hacer esto"})
+        return jsonify({"mensaje":"eliminado con exito"})
     except:
         return jsonify({"mensaje":"error al querer eliminar el producto"})
 
         
-
+#-------------------------------------------------------------------------------------
 
 #------------endpoint para comprar un producto y que me de la info de ese producto
 @cross_origin
@@ -173,7 +198,7 @@ def eliminar_producto(id_producto):
 def comprar_GET(id_producto):
     try:
 
-        id_usuario=request.args.get('id_usuario')
+        
         
 
         producto = Producto.query.get(id_producto)
@@ -199,35 +224,45 @@ def comprar_PUT(id_producto):
     try:
         id_usuario=request.args.get('id_usuario')
 
+        usuario=Usuario.query.get(id_usuario)
+
         producto=Producto.query.get(id_producto)
+
         data= request.json
-        cantidad_comprada=data.get('cantidad')
-        producto.cantidad -= cantidad_comprada
+        cantidad_comprada=int(data.get('cantidad'))
+        
+        producto.cantidad-=cantidad_comprada
         db.session.commit()
         
         
-        return jsonify({"comentario":"Compra exitosa"})
+        info_usuario={
+            "id":usuario.id,
+            "nombre":usuario.nombre,
+            "apellido":usuario.apellido
+        }
+        
+        return jsonify(info_usuario)
     except:
-        return jsonify({"comentario":"Compra fallida"})
+        return jsonify({"comentario":"Compra fallida"}),404
 
 
-#------------endpoint para obtener los datos del producto a editar
+#-------------------------------------------------------------------------------------
+#------------endpoint para obtener los datos del producto a editar y todas las categorias que hay
 @cross_origin
 @app.route("/productos/editar/<id_producto>" , methods=["GET"])
 def editar_GET(id_producto):
     try:
-            id_usuario=request.args.get('id_usuario')
+            
 
             producto = Producto.query.get(id_producto)
-            categoria_id_producto=Categoria.query.get(producto.categoria_id)
-
+            
             producto_data={
                 "nombre":producto.nombre,
                 "precio":producto.precio,
                 "cantidad":producto.cantidad,
                 "imagen":producto.imagen,
-                "categoria_id":producto.categoria_id,
-                "categoria":categoria_id_producto.categoria,
+                "categoria_id":producto.categoria_id
+                
             }
             categorias = Categoria.query.all()
             categorias_data=[]
