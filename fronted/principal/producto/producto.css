@@ -83,6 +83,28 @@ img{
     background-color: white;
     border: 2px solid black;
 }
+.boton_salir_abajo{
+    width: 100%;
+    height: 50%;
+    display: inline-flex;
+    justify-content: end;
+    align-items: end;
+    padding-right: 20px;
+    
+    
+}
+.boton_salir_abajo > a{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    height: 60px;
+    width: 80px;
+    color: black;
+    background-color: white;
+    border: 2px solid black;
+}
+
 
 .comentarios{
     display: flex;

@@ -61,7 +61,7 @@
             .then((res)=>res.json())
             .then(manejar_respuesta)
             .catch((error)=>console.log("erorr al agregar el comentario",error))
-            
+
             function manejar_respuesta(contenido){
                 alert(contenido.mensaje)
             }
@@ -101,12 +101,17 @@
             info_arriba.append(stock)
             info_arriba.append(precio)
 
+            let boton_salir = document.createElement("div")
+            boton_salir.setAttribute("class","boton_salir_abajo")
+            boton_salir.innerHTML=`<a href="../?id_user=${id_user}" type="button">Salir</a>`
+
             let boton_comprar = document.createElement("div")
             boton_comprar.setAttribute("class","boton_comprar_abajo")
             boton_comprar.innerHTML=`<a href="comprar?id_producto=${id_producto}&id_user=${id_user}" type="button">Comprar</a>`
 
             info_producto.append(info_arriba)
             info_producto.append(boton_comprar)
+            info_producto.append(boton_salir)
             producto.append(imagen)
             producto.append(info_producto)
 
