@@ -48,12 +48,18 @@
         function borrar_producto(){
             if(confirm("¿Seguro que quieres borrar el producto?")){
                 fetch(`http://localhost:5000/productos/${id_producto}`,{
-                    method:"DELETE"
+                    method:'DELETE',
+                    headers:{
+                        'Content-Type':'application/json'
+                    },
+                    
                 }).then((data_recibida)=>data_recibida.json())
-                .then((data)=>console.log(data))
+                .then(redirigir)
                 .catch((error)=>console.log("eror al eliminar"))
-                //window.location.href="../../?id_user=1"
-
+                
+                function redirigir(data){
+                    window.location.href="../../?id_user=1"
+                }
             }
         }
 

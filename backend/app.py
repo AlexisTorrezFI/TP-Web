@@ -181,6 +181,11 @@ def eliminar_producto(id_producto):
     try:
         
         producto = Producto.query.get(id_producto)
+        
+        comentarios_a_eliminar = Comentario.query.filter_by(producto_id=id_producto).all()
+        for comentario in comentarios_a_eliminar:
+            db.session.delete(comentario)
+            
         db.session.delete(producto)
         db.session.commit()
 
